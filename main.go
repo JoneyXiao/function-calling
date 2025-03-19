@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	tools "kgent/tools"
+	tools "function-calling/tools"
 
 	godotenv "github.com/joho/godotenv"
 	openai "github.com/sashabaranov/go-openai"
@@ -133,7 +133,8 @@ func main() {
 	toolsList := make([]openai.Tool, 0)
 	toolsList = append(toolsList, tools.WeatherToolDefine)
 
-	prompt := "帮我查询一下深圳当前的天气情况，今天适合出去游玩吗？"
+	// prompt := "帮我查询一下深圳当前的天气情况，今天适合出去游玩吗？"
+	prompt := "帮我查询一下深圳当前的天气情况，今天适合出去游玩吗？ Let's think step by step."
 	MessageStore.AppendMessage(RoleUser, prompt, nil)
 
 	response := ChatWithTools(MessageStore.GetMessages(), toolsList)

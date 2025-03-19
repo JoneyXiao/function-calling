@@ -1,4 +1,4 @@
-module kgent
+module function-calling
 
 go 1.21.3
 
