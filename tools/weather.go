@@ -11,6 +11,8 @@ import (
 	openai "github.com/sashabaranov/go-openai"
 )
 
+var weatherURL = "https://api.open-meteo.com/v1/forecast"
+
 // WeatherToolDefine defines the OpenAI tool for getting weather information
 var WeatherToolDefine = openai.Tool{
 	Type: "function",
@@ -19,11 +21,11 @@ var WeatherToolDefine = openai.Tool{
 		Description: `
 		Use this tool to get current weather and forecast information for a specific location.
 		Example:
-			"What's the weather in New York?"
-		Then Action Input is: {"latitude": 40.7128, "longitude": -74.0060}
+			"What's the weather in Shenzhen?"
+		Then Action Input is: {"latitude": 22.547, "longitude": 114.058}
 		
 		You can also request specific weather parameters:
-		{"latitude": 40.7128, "longitude": -74.0060, "current": ["temperature_2m", "weather_code"], "daily": ["temperature_2m_max", "temperature_2m_min"]}
+		{"latitude": 22.547, "longitude": 114.058, "current": ["temperature_2m", "weather_code"], "daily": ["temperature_2m_max", "temperature_2m_min"]}
 		`,
 		Parameters: `{
 			"type": "object",
@@ -125,7 +127,6 @@ var weatherCodeToDescription = map[int]string{
 
 // GetWeather fetches weather data from Open-Meteo API
 func GetWeather(params WeatherParams) (string, error) {
-	baseURL := "https://api.open-meteo.com/v1/forecast"
 	queryParams := url.Values{}
 
 	// Add required parameters
@@ -155,7 +156,7 @@ func GetWeather(params WeatherParams) (string, error) {
 	}
 
 	// Build the full URL
-	fullURL := fmt.Sprintf("%s?%s", baseURL, queryParams.Encode())
+	fullURL := fmt.Sprintf("%s?%s", weatherURL, queryParams.Encode())
 
 	// Make the HTTP request
 	resp, err := http.Get(fullURL)

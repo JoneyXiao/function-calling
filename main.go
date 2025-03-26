@@ -120,6 +120,16 @@ func ChatWithTools(message []openai.ChatCompletionMessage, tools []openai.Tool) 
 	return rsp.Choices[0].Message
 }
 
+// printDebugInfo prints debug information about the message store
+func printDebugInfo() {
+	fmt.Println("# Message Store Debug:")
+	messages := MessageStore.GetMessages()
+	fmt.Printf("Number of messages: %d\n", len(messages))
+	for i, msg := range messages {
+		fmt.Printf("Message %d: Role=%s, Content length=%d\n", i, msg.Role, len(msg.Content))
+	}
+}
+
 func main() {
 	// Example with chat history
 	// MessageStore.AppendMessage(RoleSystem, "你是一名 AIOps 专家，请尽可能地帮我回答与 AIOps 相关的问题。")
@@ -133,8 +143,9 @@ func main() {
 	toolsList := make([]openai.Tool, 0)
 	toolsList = append(toolsList, tools.WeatherToolDefine)
 
-	// prompt := "帮我查询一下深圳当前的天气情况，今天适合出去游玩吗？"
-	prompt := "帮我查询一下深圳当前的天气情况，今天适合出去游玩吗？ Let's think step by step."
+	// MessageStore.AppendMessage(RoleSystem, "You are a weather expert, please help me answer questions about weather.", nil)
+	prompt := "What's the weather in Shenzhen? Is it suitable for outdoor activities?"
+	// prompt := "帮我查询一下深圳当前的天气情况，今天适合出去游玩吗？ Let's think step by step."
 	MessageStore.AppendMessage(RoleUser, prompt, nil)
 
 	response := ChatWithTools(MessageStore.GetMessages(), toolsList)
@@ -144,6 +155,9 @@ func main() {
 	loopCount := 0
 
 	for {
+		fmt.Printf("-------------- The %d round response ------------------\n", loopCount)
+		printDebugInfo()
+
 		if toolCalls == nil || loopCount >= maxLoops {
 			fmt.Println("Final response from LLM: ", response.Content)
 			break
